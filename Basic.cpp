@@ -1,12 +1,13 @@
-#ifndef BASIC
+#include "Basic.h"
+#include <cmath>
 
-#define BASIC
-const float RACKET_SPEED = 8.0f;
-const float RACKET_LENGTH = 100.0f;
-const float RACKET_HEIGHT = 10.f;
-const float PONG_RADIUS = 20.f;
-const float INIT_POSY = 550.f;
-const int SCREEN_LENGTH = 800;
-const int SCREEN_HEIGHT = 600;
+float Distance(sf::Vector2f x, sf::Vector2f y)
+{
+    return std::sqrt((x.x - y.x) * (x.x - y.x) + (x.y - y.y) * (x.y - y.y));
+}
 
-#endif
+sf::Vector2f toRecCoord(float length, float direction)
+{
+    return { length * sin(direction), -length * cos(direction) };
+}
+// up is 0, right is +, left is -

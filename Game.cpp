@@ -1,30 +1,17 @@
-#include "Control.cpp"
-#include "Physics.cpp"
-#include "Display.cpp"
-#include "Stats.cpp"
+#include "Game.h"
+#include "Control.h"
+#include "Physics.h"
+#include "Display.h"
+#include "Stats.h"
 
-#ifndef GAME
-#define GAME
-
-class Game
+void Game::Init()
 {
-    GameControl gameControl;
-    GamePhysics gamePhysics;
-    GameDisplay gameDisplay;
-    GameStats gameStats;
+    gameStats.Init();
+}
 
-public:
-    void Init()
-    {
-        gameStats.Init();
-    }
-
-    void Update(sf::RenderWindow& window)
-    {
-        gameDisplay.Update(window, gameStats);
-        gameStats = gamePhysics.Update(window, gameStats);
-        gameStats = gameControl.Update(window, gameStats);
-    }
-};
-
-#endif
+void Game::Update(sf::RenderWindow& window)
+{
+    GameDisplay::Update(window, gameStats);
+    gameStats = GamePhysics::Update(gameStats);
+    gameStats = GameControl::Update(window, gameStats);
+}

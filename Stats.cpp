@@ -1,47 +1,24 @@
-#include <vector>
-#include "Basic.cpp"
-#include "Elements.cpp"
+#include "Stats.h"
 
-#ifndef STATS
-#define STATS
-class InGameStats
+void InGameStats::Init()
 {
-public:
-    std::vector<Brick> bricks;
-    Pong pong;
-    Brick racket;
-    int timeType;
-    // 0 - "animation time" 1 - "shooting" 2 - "normal gameplay"
-    void Init()
-    {
-        pong.pos = { SCREEN_LENGTH / 2 - PONG_RADIUS, INIT_POSY - 2 * PONG_RADIUS };
-        pong.radius = PONG_RADIUS;
-        racket.pos = { SCREEN_LENGTH / 2 - RACKET_LENGTH / 2 ,INIT_POSY };
-        racket.size = { RACKET_LENGTH, RACKET_HEIGHT };
-        timeType = 1;
-    }
-};
+    pong.pos = { SCREEN_LENGTH / 2 - PONG_RADIUS, INIT_POSY - 2 * PONG_RADIUS };
+    pong.velocity = { 0, 0 };
+    pong.radius = PONG_RADIUS;
+    racket.pos = { SCREEN_LENGTH / 2 - RACKET_LENGTH / 2 ,INIT_POSY };
+    racket.size = { RACKET_LENGTH, RACKET_HEIGHT };
+    timeType = 1;
+    speed = INIT_SPEED;
+    direction = 0;
+}
 
-class OutGameStats
+void OutGameStats::Init()
 {
-public:
-    void Init()
-    {
-    }
-};
+    // empty for now
+}
 
-class GameStats
+void GameStats::Init()
 {
-public:
-    bool isInGame = 1;
-    InGameStats inStats;
-    OutGameStats outStats;
-
-    void Init()
-    {
-        inStats.Init();
-        outStats.Init();
-    }
-
-};
-#endif
+    inStats.Init();
+    outStats.Init();
+}

@@ -21,9 +21,6 @@
     <ClCompile Include="Basic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Elements.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Stats.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -39,5 +36,28 @@
     <ClCompile Include="Game.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Basic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Control.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Stats.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Elements.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Display.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
