@@ -1,5 +1,6 @@
 #include "Stats.h"
 #include "Control.h"
+#include "Debug.h"
 
 GameStats GameControl::Update(sf::RenderWindow& window, GameStats stats)
 {
@@ -25,6 +26,7 @@ GameStats GameControl::Update(sf::RenderWindow& window, GameStats stats)
             {
                 stats.inStats.pong.velocity = toRecCoord(stats.inStats.speed, stats.inStats.direction);
                 stats.inStats.timeType = 2;
+                GameDebug::Log(stats);
             }
     }
     return stats;

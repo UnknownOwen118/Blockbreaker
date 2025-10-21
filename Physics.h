@@ -1,10 +1,13 @@
 #include "Stats.h"
+#include <random>
+#include <time.h>
 
 #pragma once
 
-static class GamePhysics
+class GamePhysics
 {
-    
+    static int timer;
+
     static GameStats LimitRacket(GameStats stats);
 
     static GameStats PongMove(GameStats stats);
@@ -21,7 +24,14 @@ static class GamePhysics
 
     static GameStats CollideWithBrick(GameStats stats);
 
+	static GameStats GenerateBrick(GameStats stats);
+
+	static GameStats BrickFall(GameStats stats);
+    //temperary
+
 public:
 
     static GameStats Update(GameStats stats);
+
+	static void Init();
 };

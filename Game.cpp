@@ -3,10 +3,12 @@
 #include "Physics.h"
 #include "Display.h"
 #include "Stats.h"
+#include "Debug.h"
 
 void Game::Init()
 {
     gameStats.Init();
+	GamePhysics::Init();
 }
 
 void Game::Update(sf::RenderWindow& window)

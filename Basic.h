@@ -13,6 +13,10 @@ const int SCREEN_HEIGHT = 600;
 const float PI = 3.14159f;
 const float ROTATE_SPEED = PI / 2.f / 30.f;
 const float MAX_ROTATION = PI / 3.f;
+const int BLOCK_LENGTH = 80;
+const int BLOCK_HEIGHT = 60;
+const float FALL_SPEED = 4.f;
+const int RAND_PRECISION = 1000;
 //const int ROTATE_SPEED = PI / 2.f / 30.f; 
 
 sf::Vector2f toRecCoord(float length, float direction);
