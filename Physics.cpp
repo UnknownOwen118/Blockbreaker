@@ -4,45 +4,50 @@
 
 int GamePhysics::timer = 0;
 
-GameStats GamePhysics::LimitRacket(GameStats stats)
+Brick GamePhysics::LimitRacket(Brick racket)
 {
-    if (stats.inStats.racket.pos.x <= 0) stats.inStats.racket.pos.x = 0;
-    if (stats.inStats.racket.pos.x + RACKET_LENGTH >= SCREEN_LENGTH)
-        stats.inStats.racket.pos.x = SCREEN_LENGTH - RACKET_LENGTH;
-    if (stats.inStats.timeType == 1)
-    {
-        if (stats.inStats.direction <= -MAX_ROTATION) stats.inStats.direction = -MAX_ROTATION;
-        if (stats.inStats.direction >= MAX_ROTATION) stats.inStats.direction = MAX_ROTATION;
-        stats.inStats.pong.pos.x = stats.inStats.racket.pos.x + RACKET_LENGTH / 2 - stats.inStats.pong.radius;
-    }
-    return stats;
+    if (racket.pos.x <= 0) racket.pos.x = 0;
+    if (racket.pos.x + RACKET_LENGTH >= SCREEN_LENGTH)
+        racket.pos.x = SCREEN_LENGTH - RACKET_LENGTH;
+    return racket;
+}
+float GamePhysics::LimitDirection(float direction) {
+    
+    if (direction <= -MAX_ROTATION) direction = -MAX_ROTATION;
+    if (direction >= MAX_ROTATION) direction = MAX_ROTATION;
+	
+    return direction;
 }
 
-GameStats GamePhysics::CollideWithWall(GameStats stats)
-{
-    if (stats.inStats.pong.pos.x < 0)
-    {
-        stats.inStats.pong.velocity.x = -stats.inStats.pong.velocity.x;
-        stats.inStats.pong.pos.x = 0;
-    }
-    if (stats.inStats.pong.pos.x > SCREEN_LENGTH - 2 * stats.inStats.pong.radius)
-    {
-        stats.inStats.pong.velocity.x = -stats.inStats.pong.velocity.x;
-        stats.inStats.pong.pos.x = SCREEN_LENGTH - 2 * stats.inStats.pong.radius;
-    }
-    if (stats.inStats.pong.pos.y < 0)
-    {
-        stats.inStats.pong.velocity.y = -stats.inStats.pong.velocity.y;
-        stats.inStats.pong.pos.y = 0;
-    }
-    return stats;
+Pong GamePhysics::LimitUnshotPong(Pong pong, Brick racket){
+    pong.pos.x = racket.pos.x + RACKET_LENGTH / 2 - pong.radius;
+    return pong;
 }
 
-GameStats GamePhysics::PongMove(GameStats stats)
+Pong GamePhysics::CollideWithWall(Pong pong)
 {
-    if (stats.inStats.timeType == 2)
-        stats.inStats.pong.pos += stats.inStats.pong.velocity;
-    return stats;
+    if (pong.pos.x < 0)
+    {
+        pong.velocity.x = -pong.velocity.x;
+        pong.pos.x = 0;
+    }
+    if (pong.pos.x > SCREEN_LENGTH - 2 * pong.radius)
+    {
+        pong.velocity.x = -pong.velocity.x;
+        pong.pos.x = SCREEN_LENGTH - 2 * pong.radius;
+    }
+    if (pong.pos.y < 0)
+    {
+        pong.velocity.y = -pong.velocity.y;
+        pong.pos.y = 0;
+    }
+    return pong;
+}
+
+Pong GamePhysics::PongMove(Pong pong)
+{
+    pong.pos += pong.velocity;
+    return pong;
 }
 
 int GamePhysics::isCollideWithBrick(Pong pong, Brick brick)
@@ -76,28 +81,30 @@ int GamePhysics::isCollideWithBrick(Pong pong, Brick brick)
     // 3 - left 4 - right 5 - topleft corner 6 - topright 7 - bottomright 8 - bottomleft
 }
 
-GameStats GamePhysics::CollideWithRacket(GameStats stats)
+Pong GamePhysics::CollideWithRacket(Pong pong, Brick racket)
 {
-    int flag = isCollideWithBrick(stats.inStats.pong, stats.inStats.racket);
-    if (!flag) return stats;
-    float dx = 2 * (stats.inStats.pong.pos.x + stats.inStats.pong.radius -
-        stats.inStats.racket.pos.x - stats.inStats.racket.size.x / 2) / stats.inStats.racket.size.x;
-    stats.inStats.pong.velocity = toRecCoord(stats.inStats.speed, dx * MAX_ROTATION);
+    float speed = std::sqrt(pong.velocity.x * pong.velocity.x + pong.velocity.y * pong.velocity.y);
+    int flag = isCollideWithBrick(pong, racket);
+    if (!flag) return pong;
+    float dx = 2 * (pong.pos.x + pong.radius -
+        racket.pos.x - racket.size.x / 2) / racket.size.x;
+    pong.velocity = toRecCoord(speed, dx * MAX_ROTATION);
     if (flag == 2 || flag == 7 || flag == 8)
-        stats.inStats.pong.velocity.y = -stats.inStats.pong.velocity.y;
-    return stats;
+        pong.velocity.y = -pong.velocity.y;
+    return pong;
 }
 
-GameStats GamePhysics::CollideWithBrick(GameStats stats)
+Pong GamePhysics::CollideWithBrick(Pong pong, std::vector<Brick> bricks)
 {
-    for (int i = 0; i < stats.inStats.bricks.size(); i++)
+	float speed = std::sqrt(pong.velocity.x * pong.velocity.x + pong.velocity.y * pong.velocity.y);
+    for (int i = 0; i < bricks.size(); i++)
     {
-        int flag = isCollideWithBrick(stats.inStats.pong, stats.inStats.bricks[i]);
+        int flag = isCollideWithBrick(pong, bricks[i]);
         if (!flag) continue;
         if (flag == 1 || flag == 2) 
-            stats.inStats.pong.velocity.y = -stats.inStats.pong.velocity.y;
+            pong.velocity.y = -pong.velocity.y;
         else if (flag == 3 || flag == 4)
-            stats.inStats.pong.velocity.x = -stats.inStats.pong.velocity.x;
+            pong.velocity.x = -pong.velocity.x;
         else
         {
             /*
@@ -114,73 +121,91 @@ GameStats GamePhysics::CollideWithBrick(GameStats stats)
             */
 			//以上有bug。如果球溜边碰撞，法线计算会出问题，导致球卡在砖块里
 			float direction = flag * PI / 2 - PI * 3.f + (rand() % RAND_PRECISION) / (RAND_PRECISION * 1.0f) * (PI / 2.f);
-			stats.inStats.pong.velocity = toRecCoord(stats.inStats.speed, direction);
+			pong.velocity = toRecCoord(speed, direction);
 		}
-		stats = PongMove(stats);
-        if (stats.inStats.bricks[i].type == 1)
-        {
-            stats.inStats.bricks.erase(stats.inStats.bricks.begin() + i);
-            i--;
-        }
-		else if (stats.inStats.bricks[i].type == 2)
-        {
-			stats.inStats.bricks[i].type = 1;
-        }
+		pong = PongMove(pong);
     }
-	return stats;
+	return pong;
 }
 
-GameStats GamePhysics::GenerateBrick(GameStats stats)
+std::vector<Brick> GamePhysics::HitBrick(Pong pong, std::vector<Brick> bricks)
+{
+    for (int i = 0; i < bricks.size(); i++)
+    {
+        int flag = isCollideWithBrick(pong, bricks[i]);
+        if (flag)
+        {
+            if (bricks[i].type == 1)
+            {
+                bricks.erase(bricks.begin() + i);
+                i--;
+            }
+            else if (bricks[i].type == 2)
+            {
+                bricks[i].type = 1;
+            }
+        }
+    }
+    return bricks;
+}
+
+std::vector<Brick> GamePhysics::GenerateBrick(std::vector<Brick> bricks)
 {
     Brick brick;
     brick.pos = { (rand() % (SCREEN_LENGTH - BLOCK_LENGTH)) * 1.0f, 0.0f};
     brick.size = { BLOCK_LENGTH, BLOCK_HEIGHT };
     brick.type = rand() % 3;
-    stats.inStats.bricks.push_back(brick);
-    return stats;
+    bricks.push_back(brick);
+    return bricks;
 }
 
-GameStats GamePhysics::BrickFall(GameStats stats)
+std::vector<Brick> GamePhysics::BrickFall(std::vector<Brick> bricks)
 {
-    for (int i = 0; i < stats.inStats.bricks.size(); i++)
+    for (int i = 0; i < bricks.size(); i++)
     {
-        stats.inStats.bricks[i].pos.y += FALL_SPEED;
-        if (stats.inStats.bricks[i].pos.y > SCREEN_HEIGHT)
+        bricks[i].pos.y += FALL_SPEED;
+        if (bricks[i].pos.y > SCREEN_HEIGHT)
         {
-            stats.inStats.bricks.erase(stats.inStats.bricks.begin() + i);
+            bricks.erase(bricks.begin() + i);
             i--;
         }
     }
-    return stats;
+    return bricks;
 }
 
-GameStats GamePhysics::CheckDie(GameStats stats)
+bool GamePhysics::CheckDie(Pong pong)
 {
-    if (stats.inStats.pong.pos.y >= SCREEN_HEIGHT)
-    {
-        stats.inStats.timeType = 1;
-        stats.inStats.Init();
-    }
-    return stats;
+    return pong.pos.y >= SCREEN_HEIGHT;
 }
 
 GameStats GamePhysics::Update(GameStats stats)
 {
     if (!stats.isInGame) return stats;
-    stats = PongMove(stats);
-	//这里必须先移动球，再检测碰撞，否则发球时立刻碰撞会出问题
-    stats = LimitRacket(stats);
-    if (timer % 20 == 0)
-    {
-        stats = GenerateBrick(stats);
-    }
-    stats = BrickFall(stats);
     if (stats.inStats.timeType == 2)
     {
-        stats = CollideWithWall(stats);
-        stats = CollideWithRacket(stats);
-        stats = CollideWithBrick(stats);
-        stats = CheckDie(stats);
+        stats.inStats.pong = PongMove(stats.inStats.pong);
+    }
+	//这里必须先移动球，再检测碰撞，否则发球时立刻碰撞会出问题
+    stats.inStats.racket = LimitRacket(stats.inStats.racket);
+	stats.inStats.direction = LimitDirection(stats.inStats.direction);
+    if (stats.inStats.timeType == 1)
+    {
+		stats.inStats.pong = LimitUnshotPong(stats.inStats.pong, stats.inStats.racket);
+    }
+    if (timer % 20 == 0)
+    {
+        stats.inStats.bricks = GenerateBrick(stats.inStats.bricks);
+    }
+    stats.inStats.bricks = BrickFall(stats.inStats.bricks);
+    if (stats.inStats.timeType == 2)
+    {
+        stats.inStats.pong = CollideWithWall(stats.inStats.pong);
+        stats.inStats.pong = CollideWithRacket(stats.inStats.pong, stats.inStats.racket);
+		std::vector<Brick> newBricks = HitBrick(stats.inStats.pong, stats.inStats.bricks);
+        stats.inStats.pong = CollideWithBrick(stats.inStats.pong, stats.inStats.bricks);
+		stats.inStats.bricks = newBricks;
+        if (CheckDie(stats.inStats.pong))
+            stats.Init();
     }
     
 	timer++;

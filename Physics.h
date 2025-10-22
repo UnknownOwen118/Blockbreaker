@@ -8,25 +8,31 @@ class GamePhysics
 {
     static int timer;
 
-    static GameStats LimitRacket(GameStats stats);
+    static Brick LimitRacket(Brick racket);
 
-    static GameStats PongMove(GameStats stats);
+	static float LimitDirection(float direction);
+
+	static Pong LimitUnshotPong(Pong pong, Brick racket);
+
+    static Pong PongMove(Pong pong);
 
     static int isCollideWithBrick(Pong pong, Brick brick);
     // 0 = not collide 1 = collide on the top of the brick 2 - collide on the bottom
     // 3 - left 4 - right 5 - topleft corner 6 - topright 7 - bottomleft 8 - bottomright
 
-    static GameStats CheckDie(GameStats stats);
+    static bool CheckDie(Pong pong);
 
-    static GameStats CollideWithRacket(GameStats stats);
+    static Pong CollideWithRacket(Pong pong, Brick racket);
 
-    static GameStats CollideWithWall(GameStats stats);
+    static Pong CollideWithWall(Pong pong);
 
-    static GameStats CollideWithBrick(GameStats stats);
+    static Pong CollideWithBrick(Pong pong, std::vector<Brick> bricks);
 
-	static GameStats GenerateBrick(GameStats stats);
+	static std::vector<Brick> HitBrick(Pong pong, std::vector<Brick> bricks);
 
-	static GameStats BrickFall(GameStats stats);
+	static std::vector<Brick> GenerateBrick(std::vector<Brick> bricks);
+
+	static std::vector<Brick> BrickFall(std::vector<Brick> bricks);
     //temperary
 
 public:

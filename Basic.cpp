@@ -1,6 +1,7 @@
 #include "Basic.h"
 #include <cmath>
 
+
 float Distance(sf::Vector2f x, sf::Vector2f y)
 {
     return std::sqrt((x.x - y.x) * (x.x - y.x) + (x.y - y.y) * (x.y - y.y));
