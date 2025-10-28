@@ -11,7 +11,7 @@ class InGameStats
         float direction, speed;
         int timeType = 1;
         void Init();
-
+        void GenerateBlock();
 };
 
 class OutGameStats
@@ -22,11 +22,13 @@ public:
 
 class GameStats
 {
+    
 public:
     bool isInGame = 1;
     InGameStats inStats;
     OutGameStats outStats;
 
     void Init();
+    void Reset();
 };
 #pragma once

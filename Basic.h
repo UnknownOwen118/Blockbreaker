@@ -18,8 +18,21 @@ const int BLOCK_LENGTH = 80;
 const int BLOCK_HEIGHT = 60;
 const float FALL_SPEED = 4.f;
 const int RAND_PRECISION = 1000;
-//const int ROTATE_SPEED = PI / 2.f / 30.f; 
+const int BRICK_ROWS = 4;
+const int BRICK_COLUMNS = 8;
+const float BRICK_LENGTH = SCREEN_LENGTH / BRICK_COLUMNS;
+const float BRICK_HEIGHT = SCREEN_HEIGHT / BRICK_ROWS / 4.0;
+const int TOP_OFFSET = 100;
+const int WEAK_COLOR = 63;
+const int STRONG_COLOR = 255;
+const int NORMAL_BRICK_TYPE = 5;
+const int PREDICT_STEP = 5;
+const int PREDICT_DISTANCE = 60;
+const float EDGE_OFFSET = 5.f;
+//const int ROTATE_SPEED = PI / 2.f / 30.f; ¾¯ÖÓ³¤Ãù
 
 sf::Vector2f toRecCoord(float length, float direction);
 
 float Distance(sf::Vector2f x, sf::Vector2f y);
+
+float Hash(sf::Vector2f x);
