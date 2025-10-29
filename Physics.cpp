@@ -61,12 +61,12 @@ int GamePhysics::isCollideWithBrick(Pong pong, Brick brick)
     float x1 = brick.pos.x;
     float x2 = x1 + brick.size.x;
 
-    if (x >= x1 - EDGE_OFFSET && x <= x2 + EDGE_OFFSET)
+    if (x >= x1 && x <= x2)
     {
         if (y + r >= y1 && y <= (y1 + y2) / 2) return 1;
         if (y - r <= y2 && y >= (y1 + y2) / 2) return 2;
     }
-    if (y >= y1 - EDGE_OFFSET && y <= y2 + EDGE_OFFSET)
+    if (y >= y1 && y <= y2)
     {
         if (x + r >= x1 && x <= (x1 + x2) / 2) return 3;
         if (x - r <= x2 && x >= (x1 + x2) / 2) return 4;
@@ -184,13 +184,24 @@ bool GamePhysics::CheckDie(Pong pong)
 GameStats GamePhysics::Update(GameStats stats)
 {
     if (!stats.isInGame) return stats;
-    if (stats.inStats.timeType == 2)
-    {
-        stats.inStats.pong = PongMove(stats.inStats.pong);
-    }
-	//这里必须先移动球，再检测碰撞，否则发球时立刻碰撞会出问题
     stats.inStats.racket = LimitRacket(stats.inStats.racket);
 	stats.inStats.direction = LimitDirection(stats.inStats.direction);
+    if (stats.inStats.isPause) return stats;
+    if (stats.inStats.timeType == 2)
+    {
+        for (int i = 0; i < PHYSIC_FPF; i++)
+        {
+            stats.inStats.pong = PongMove(stats.inStats.pong);
+            stats.inStats.pong = CollideWithWall(stats.inStats.pong);
+            stats.inStats.pong = CollideWithRacket(stats.inStats.pong, stats.inStats.racket);
+            std::vector<Brick> newBricks = HitBrick(stats.inStats.pong, stats.inStats.bricks);
+            stats.inStats.pong = CollideWithBrick(stats.inStats.pong, stats.inStats.bricks);
+            stats.inStats.bricks = newBricks;
+        }
+        if (CheckDie(stats.inStats.pong))
+            stats.Reset();
+    }
+	//这里必须先移动球，再检测碰撞，否则发球时立刻碰撞会出问题
     if (stats.inStats.timeType == 1)
     {
 		stats.inStats.pong = LimitUnshotPong(stats.inStats.pong, stats.inStats.racket);
@@ -200,16 +211,6 @@ GameStats GamePhysics::Update(GameStats stats)
     //    stats.inStats.bricks = GenerateBrick(stats.inStats.bricks);
     //}
     //stats.inStats.bricks = BrickFall(stats.inStats.bricks);
-    if (stats.inStats.timeType == 2)
-    {
-        stats.inStats.pong = CollideWithWall(stats.inStats.pong);
-        stats.inStats.pong = CollideWithRacket(stats.inStats.pong, stats.inStats.racket);
-		std::vector<Brick> newBricks = HitBrick(stats.inStats.pong, stats.inStats.bricks);
-        stats.inStats.pong = CollideWithBrick(stats.inStats.pong, stats.inStats.bricks);
-		stats.inStats.bricks = newBricks;
-        if (CheckDie(stats.inStats.pong))
-            stats.Reset();
-    }
     
 	timer++;
     return stats;

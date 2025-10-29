@@ -8,7 +8,8 @@ const float RACKET_LENGTH = 100.0f;
 const float RACKET_HEIGHT = 10.f;
 const float PONG_RADIUS = 20.f;
 const float INIT_POSY = 550.f;
-const float INIT_SPEED = 16.f;
+const float INIT_SPEED = 1.f;
+const int PHYSIC_FPF = 16;
 const int SCREEN_LENGTH = 800;
 const int SCREEN_HEIGHT = 600;
 const float PI = 3.14159f;
@@ -28,7 +29,6 @@ const int STRONG_COLOR = 255;
 const int NORMAL_BRICK_TYPE = 5;
 const int PREDICT_STEP = 5;
 const int PREDICT_DISTANCE = 60;
-const float EDGE_OFFSET = 5.f;
 //const int ROTATE_SPEED = PI / 2.f / 30.f; ¾¯ÖÓ³¤Ãù
 
 sf::Vector2f toRecCoord(float length, float direction);
@@ -36,3 +36,5 @@ sf::Vector2f toRecCoord(float length, float direction);
 float Distance(sf::Vector2f x, sf::Vector2f y);
 
 float Hash(sf::Vector2f x);
+
+sf::Vector2f Multiply(sf::Vector2f a, float b);

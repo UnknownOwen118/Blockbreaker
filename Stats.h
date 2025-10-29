@@ -10,9 +10,11 @@ class InGameStats
         Brick racket;
         float direction, speed;
         int timeType = 1;
+        int isPause = 0;
         void Init();
         void GenerateBlock();
 };
+//1 - shooting 2 - flying
 
 class OutGameStats
 {
