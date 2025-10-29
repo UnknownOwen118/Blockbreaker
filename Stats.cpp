@@ -24,7 +24,6 @@ void InGameStats::Init()
     racket.pos = { SCREEN_LENGTH / 2 - RACKET_LENGTH / 2 ,INIT_POSY };
     racket.size = { RACKET_LENGTH, RACKET_HEIGHT };
     timeType = 1;
-    isPause = 0;
     speed = INIT_SPEED;
     direction = 0;
   

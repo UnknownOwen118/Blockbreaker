@@ -9,15 +9,15 @@ void GameDisplay::DrawPredict(sf::RenderWindow& window, GameStats stats)
     {
         falsePong.velocity = toRecCoord(stats.inStats.speed, stats.inStats.direction);
     }
-    for (int i = 1; i <= PREDICT_DISTANCE * PHYSIC_FPF; i++)
+    for (int i = 1; i <= PREDICT_DISTANCE; i++)
     {
         falsePong = GamePhysics::PongMove(falsePong);
         falsePong = GamePhysics::CollideWithWall(falsePong);
         falsePong = GamePhysics::CollideWithBrick(falsePong, stats.inStats.bricks); \
         falsePong = GamePhysics::CollideWithRacket(falsePong, stats.inStats.racket);
-        if (i % (PREDICT_STEP * PHYSIC_FPF) == 0)
+        if (i % PREDICT_STEP == 0)
         {
-            float newRadius = falsePong.radius * (1 - 1.0 * i / (PREDICT_DISTANCE * PHYSIC_FPF));
+            float newRadius = falsePong.radius * (1 - 1.0 * i / PREDICT_DISTANCE);
             sf::Vector2f deltaPos = { falsePong.radius - newRadius, falsePong.radius - newRadius };
             sf::CircleShape circle(newRadius);
             circle.setPosition(falsePong.pos + deltaPos);
