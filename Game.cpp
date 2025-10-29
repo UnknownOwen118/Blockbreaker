@@ -14,6 +14,6 @@ void Game::Init()
 void Game::Update(sf::RenderWindow& window)
 {
     GameDisplay::Update(window, gameStats);
-    gameStats = GamePhysics::Update(gameStats);
     gameStats = GameControl::Update(window, gameStats);
+    gameStats = GamePhysics::Update(gameStats);
 }

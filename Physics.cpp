@@ -106,8 +106,18 @@ Pong GamePhysics::CollideWithBrick(Pong pong, std::vector<Brick> bricks)
         else if (flag == 3 || flag == 4)
             pong.velocity.x = -pong.velocity.x;
         else
-        {
-            /*
+        {   
+            float direction = flag * PI / 2 - 3 * PI;
+            float deltaDirection = Hash({pong.pos.x + pong.pos.y, pong.velocity.x + pong.velocity.y})
+                * (PI / 3.f) + PI / 12.f;
+
+			pong.velocity = toRecCoord(speed, direction + deltaDirection);
+		}
+		pong = PongMove(pong);
+    }
+	return pong;
+}
+/*
             sf::Vector2f corner;
             if (flag == 5) corner = stats.inStats.bricks[i].pos;
             else if (flag == 6) corner = { stats.inStats.bricks[i].pos.x + stats.inStats.bricks[i].size.x, stats.inStats.bricks[i].pos.y };
@@ -119,14 +129,7 @@ Pong GamePhysics::CollideWithBrick(Pong pong, std::vector<Brick> bricks)
             float dot = stats.inStats.pong.velocity.x * normal.x + stats.inStats.pong.velocity.y * normal.y;
             stats.inStats.pong.velocity -= 2 * dot * normal;
             */
-			//以上有bug。如果球溜边碰撞，法线计算会出问题，导致球卡在砖块里
-			float direction = flag * PI / 2 - PI * 3.f + (rand() % RAND_PRECISION) / (RAND_PRECISION * 1.0f) * (PI / 2.f);
-			pong.velocity = toRecCoord(speed, direction);
-		}
-		pong = PongMove(pong);
-    }
-	return pong;
-}
+            //以上有bug。如果球溜边碰撞，法线计算会出问题，导致球卡在砖块里
 
 std::vector<Brick> GamePhysics::HitBrick(Pong pong, std::vector<Brick> bricks)
 {
@@ -140,9 +143,9 @@ std::vector<Brick> GamePhysics::HitBrick(Pong pong, std::vector<Brick> bricks)
                 bricks.erase(bricks.begin() + i);
                 i--;
             }
-            else if (bricks[i].type == 2)
+            else if (bricks[i].type >= 2 && bricks[i].type <= 4)
             {
-                bricks[i].type = 1;
+                bricks[i].type -= 1;
             }
         }
     }
@@ -181,32 +184,33 @@ bool GamePhysics::CheckDie(Pong pong)
 GameStats GamePhysics::Update(GameStats stats)
 {
     if (!stats.isInGame) return stats;
-    if (stats.inStats.timeType == 2)
-    {
-        stats.inStats.pong = PongMove(stats.inStats.pong);
-    }
-	//这里必须先移动球，再检测碰撞，否则发球时立刻碰撞会出问题
     stats.inStats.racket = LimitRacket(stats.inStats.racket);
 	stats.inStats.direction = LimitDirection(stats.inStats.direction);
+    if (stats.inStats.isPause) return stats;
+    if (stats.inStats.timeType == 2)
+    {
+        for (int i = 0; i < PHYSIC_FPF; i++)
+        {
+            stats.inStats.pong = PongMove(stats.inStats.pong);
+            stats.inStats.pong = CollideWithWall(stats.inStats.pong);
+            stats.inStats.pong = CollideWithRacket(stats.inStats.pong, stats.inStats.racket);
+            std::vector<Brick> newBricks = HitBrick(stats.inStats.pong, stats.inStats.bricks);
+            stats.inStats.pong = CollideWithBrick(stats.inStats.pong, stats.inStats.bricks);
+            stats.inStats.bricks = newBricks;
+        }
+        if (CheckDie(stats.inStats.pong))
+            stats.Reset();
+    }
+	//这里必须先移动球，再检测碰撞，否则发球时立刻碰撞会出问题
     if (stats.inStats.timeType == 1)
     {
 		stats.inStats.pong = LimitUnshotPong(stats.inStats.pong, stats.inStats.racket);
     }
-    if (timer % 20 == 0)
-    {
-        stats.inStats.bricks = GenerateBrick(stats.inStats.bricks);
-    }
-    stats.inStats.bricks = BrickFall(stats.inStats.bricks);
-    if (stats.inStats.timeType == 2)
-    {
-        stats.inStats.pong = CollideWithWall(stats.inStats.pong);
-        stats.inStats.pong = CollideWithRacket(stats.inStats.pong, stats.inStats.racket);
-		std::vector<Brick> newBricks = HitBrick(stats.inStats.pong, stats.inStats.bricks);
-        stats.inStats.pong = CollideWithBrick(stats.inStats.pong, stats.inStats.bricks);
-		stats.inStats.bricks = newBricks;
-        if (CheckDie(stats.inStats.pong))
-            stats.Init();
-    }
+    //if (timer % 20 == 0)
+    //{
+    //    stats.inStats.bricks = GenerateBrick(stats.inStats.bricks);
+    //}
+    //stats.inStats.bricks = BrickFall(stats.inStats.bricks);
     
 	timer++;
     return stats;
